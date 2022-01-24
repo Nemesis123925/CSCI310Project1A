@@ -27,7 +27,7 @@
     <target name="clean" description="tidy up the workspace">
         <delete dir="${build.dir}"/>
         <delete dir="${doc.dir}"/>
-        <delete dir="${dist.dir"/>
+        <delete dir="${dist.dir}"/>
         <delete>
             <fileset defaultexcludes="no" dir="${source.dir}" includes="**/*~" />
         </delete>
