@@ -17,12 +17,24 @@
 
     <!-- Compile the java code in src dir into build dir -->
     <target name="compile" depends="init" description="compile java sources">
-        <javac srcdir="${source.dir}" destdir="${build.dir}"> </javac>
+        <javac srcdir="${source.dir}" destdir="${build.dir}" includes="com/**"> </javac>
     </target>
+
     <!-- Generate javadocs for current project into docs dir -->
     <target name="doc" depends="init" description="generate documentation">
-        <javadoc sourcepath="${source.dir}" destdir="${doc.dir}"> </javadoc>
+        <javadoc sourcepath="${source.dir}/com" destdir="${doc.dir}">
+            <classpath location="lib.junit-4.11.jar"/>
+            <fileset dir="."/>
+        </javadoc>
     </target>
+
+    <target name="test" depends="compile" description="test the code">
+        <junit printsummary="yes" haltonerror="no">
+            <classpath location="lib/junit-4.11.jar"/>
+            <test name="${source.dir}/test" />
+        </junit>
+    </target>
+
     <!-- Delete the build & doc directories and Emacs backup (*~) files -->
     <target name="clean" description="tidy up the workspace">
         <delete dir="${build.dir}"/>
