@@ -136,6 +136,26 @@ public class SearchMapTest {
         assertEquals(excepted_routes, actual_routes);
     }
 
+    @Test
+    public void test_getCost() throws IOException {
+        HashMap<String, HashMap<String, Integer>> adjacent_list = SearchMap.parse_file("./SampleInputfile1");
+        HashMap<String, ArrayList<String>> routes = SearchMap.DFS("P", adjacent_list);
+        HashMap<String, Integer> expected_cost = new HashMap<>();
+
+        expected_cost.put("P",0);
+        expected_cost.put("R",300);
+        expected_cost.put("S",450);
+        expected_cost.put("T",750);
+        expected_cost.put("W",200);
+        expected_cost.put("X",500);
+        expected_cost.put("Y",700);
+        expected_cost.put("Z",1150);
+
+        HashMap<String, Integer> actual_cost = SearchMap.getCost(routes, adjacent_list);
+
+        assertEquals(actual_cost, expected_cost);
+    }
+
     @org.junit.Test
     public void main() {
     }

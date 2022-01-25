@@ -74,18 +74,38 @@ public class SearchMap {
         //BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)));
     }
 
+    public static HashMap<String,Integer> getCost(HashMap<String, ArrayList<String>> routes, HashMap<String, HashMap<String,Integer>> adjacent_list){
+        // create the returned Hashmap and push P into it
+        HashMap<String, Integer> cost = new HashMap<>();
+        cost.put("P",0);
 
+        // for each dest that's reachable
+        for (String dest : routes.keySet()) {
+            ArrayList<String> route = routes.get(dest);
+            int sum = 0;
+
+            for(int i = 0; i < route.size() - 1; i++){
+                // sum +=            from first       to   second
+                sum += adjacent_list.get(route.get(i)).get(route.get(i+1));
+            }
+            cost.put(dest,sum);
+        }
+        System.out.println(cost);
+        return cost;
+    }
 
     public static void main(String[] args) throws IOException {
 
         // first get the input file
         String input_filename = args[0];
-
+        // first put the input_filename into parse_file to get the adjacent_list
         HashMap<String, HashMap<String,Integer>> adjacent_list = parse_file(input_filename);
-
+        // get the scr
         Iterator<String> it = adjacent_list.keySet().iterator();
         String start_node = it.next();
-        System.out.println(adjacent_list);
-        DFS(start_node, adjacent_list);
+        // get the routes by using the DFS
+        HashMap<String, ArrayList<String>>routes = DFS(start_node, adjacent_list);
+        // get the cost by using the getCost function
+        HashMap<String, Integer> cost = getCost(routes, adjacent_list);
     }
 }
