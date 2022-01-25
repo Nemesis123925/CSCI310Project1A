@@ -2,18 +2,40 @@ package test;
 
 import com.SearchMap;
 import org.junit.Before;
+import org.junit.Test;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SearchMapTest {
 
-    @org.junit.Test
     @Before
+    public void setUp() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./SampleInputfile1")));
+        bw.write("P\n");
+        bw.write("P W 200\n" +
+                "P R 300\n" +
+                "R X 200\n" +
+                "Q X 375\n" +
+                "W S 250\n" +
+                "S T 300\n" +
+                "T W 350\n" +
+                "W Y 500\n" +
+                "Y Z 450\n" +
+                "Y R 600");
+        bw.close();
+    }
+
+    @org.junit.Test
     public void test_parse_file() throws IOException {
+
+
         HashMap<String, HashMap<String,Integer>> ideal_list = new HashMap<>();
 
         HashMap<String, Integer> tool = new HashMap<>();
@@ -27,41 +49,31 @@ public class SearchMapTest {
         ideal_list.put("Q", new HashMap<>(tool));
         tool.clear();
 
-        tool.put("P", 300);
         tool.put("X", 200);
-        tool.put("Y", 600);
         ideal_list.put("R", new HashMap<>(tool));
         tool.clear();
 
         tool.put("T", 300);
-        tool.put("W", 250);
         ideal_list.put("S", new HashMap<>(tool));
         tool.clear();
 
-        tool.put("S", 300);
         tool.put("W", 350);
         ideal_list.put("T", new HashMap<>(tool));
         tool.clear();
 
-        tool.put("P", 200);
         tool.put("S", 250);
-        tool.put("T", 350);
         tool.put("Y", 500);
         ideal_list.put("W", new HashMap<>(tool));
         tool.clear();
 
-        tool.put("Q", 375);
-        tool.put("R", 200);
         ideal_list.put("X", new HashMap<>(tool));
         tool.clear();
 
         tool.put("R", 600);
-        tool.put("W", 500);
         tool.put("Z", 450);
         ideal_list.put("Y", new HashMap<>(tool));
         tool.clear();
 
-        tool.put("Y", 450);
         ideal_list.put("Z", new HashMap<>(tool));
         tool.clear();
 
@@ -70,6 +82,58 @@ public class SearchMapTest {
         /*System.out.println(ideal_list);
         System.out.println(actual);*/
         assertEquals(ideal_list, actual);
+
+        Exception exception = assertThrows(IOException.class, () -> {
+            SearchMap.parse_file("sdasdasd");
+        });
+    }
+
+    @Test
+    public void testDFS() throws IOException {
+        HashMap<String, HashMap<String, Integer>> adjacent_list = SearchMap.parse_file("./SampleInputfile1");
+
+        HashMap<String, ArrayList<String>> excepted_routes = new HashMap<>(); // map to store the route
+        ArrayList<String> temp = new ArrayList<>();
+        temp.add("P");
+
+        ArrayList<String> tool = new ArrayList<>(temp);
+        tool.add("R");
+        excepted_routes.put("R", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("W");
+        tool.add("S");
+        excepted_routes.put("S", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("W");
+        tool.add("S");
+        tool.add("T");
+        excepted_routes.put("T", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("W");
+        excepted_routes.put("W", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("R");
+        tool.add("X");
+        excepted_routes.put("X", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("W");
+        tool.add("Y");
+        excepted_routes.put("Y", new ArrayList<>(tool));
+
+        tool = new ArrayList<>(temp);
+        tool.add("W");
+        tool.add("Y");
+        tool.add("Z");
+        excepted_routes.put("Z", new ArrayList<>(tool));
+
+        HashMap<String, ArrayList<String>> actual_routes = SearchMap.DFS("P", adjacent_list);
+
+        assertEquals(excepted_routes, actual_routes);
     }
 
     @org.junit.Test
